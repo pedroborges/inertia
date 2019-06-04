@@ -1,6 +1,6 @@
-import Nprogress from 'nprogress'
+import Tinybar from 'tinybar'
 
-Nprogress.configure({ showSpinner: false })
+const tinybar = new Tinybar()
 
 export default {
   delay: null,
@@ -11,14 +11,13 @@ export default {
 
     this.delay = setTimeout(() => {
       this.loading = true
-      Nprogress.set(0)
-      Nprogress.start()
+      tinybar.go(10)
     }, 250)
   },
 
   increment() {
     if (this.loading) {
-      Nprogress.inc(0.4)
+      tinybar.go(50)
     }
   },
 
@@ -26,7 +25,7 @@ export default {
     clearTimeout(this.delay)
 
     if (this.loading) {
-      Nprogress.done()
+      tinybar.go(100)
       this.loading = false
     }
   },
