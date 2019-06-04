@@ -1,4 +1,3 @@
-import Axios from 'axios'
 import Modal from './modal'
 import Progress from './progress'
 
@@ -7,8 +6,7 @@ export default {
   updatePage: null,
   version: null,
   visitId: null,
-  cancelToken: null,
-  page: null,
+  abortController: null,
 
   init({ initialPage, resolveComponent, updatePage }) {
     this.resolveComponent = resolveComponent
@@ -34,15 +32,24 @@ export default {
   },
 
   isInertiaResponse(response) {
-    return response && response.headers['x-inertia']
+    return response && response.headers.has('x-inertia')
+  },
+
+  hasBody(method) {
+    return ['GET', 'HEAD'].indexOf(method.toUpperCase()) === -1
+  },
+
+  getCookieValue(name) {
+    let match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'))
+    return match ? decodeURIComponent(match[3]) : null
   },
 
   cancelActiveVisits() {
-    if (this.cancelToken) {
-      this.cancelToken.cancel(this.cancelToken)
+    if (this.abortController) {
+      this.abortController.abort()
     }
 
-    this.cancelToken = Axios.CancelToken.source()
+    this.abortController = new AbortController()
   },
 
   createVisitId() {
@@ -55,15 +62,16 @@ export default {
     this.cancelActiveVisits()
     let visitId = this.createVisitId()
 
-    return Axios({
-      method,
-      url: url.toString(),
-      data: method.toLowerCase() === 'get' ? {} : data,
-      params: method.toLowerCase() === 'get' ? data : {},
-      cancelToken: this.cancelToken.token,
+    return window.fetch(url.toString(), {
+      method: method.toLowerCase(),
+      ...this.hasBody(method) ? { body: JSON.stringify(data) } : {},
+      signal: this.abortController.signal,
+      credentials: 'include',
       headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
         Accept: 'text/html, application/xhtml+xml',
         'X-Requested-With': 'XMLHttpRequest',
+        'X-Xsrf-Token': this.getCookieValue('XSRF-TOKEN'),
         'X-Inertia': true,
         ...(only.length ? {
           'X-Inertia-Partial-Component': this.page.component,
@@ -72,22 +80,20 @@ export default {
         ...(this.version ? { 'X-Inertia-Version': this.version } : {}),
       },
     }).then(response => {
-      if (this.isInertiaResponse(response)) {
-        return response.data
+      if (response.status === 409 && response.headers.has('x-inertia-location')) {
+        Progress.stop()
+        return this.hardVisit(true, response.headers.get('x-inertia-location'))
+      } else if (this.isInertiaResponse(response)) {
+        return response.json()
       } else {
-        Modal.show(response.data)
+        response.text().then(data => {
+          Progress.stop()
+          Modal.show(data)
+        })
       }
     }).catch(error => {
-      if (Axios.isCancel(error)) {
+      if (error.name === 'AbortError') {
         return
-      } else if (error.response.status === 409 && error.response.headers['x-inertia-location']) {
-        Progress.stop()
-        return this.hardVisit(true, error.response.headers['x-inertia-location'])
-      } else if (this.isInertiaResponse(error.response)) {
-        return error.response.data
-      } else if (error.response) {
-        Progress.stop()
-        Modal.show(error.response.data)
       } else {
         return Promise.reject(error)
       }
