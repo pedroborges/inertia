@@ -7,6 +7,7 @@ export default {
   version: null,
   visitId: null,
   abortController: null,
+  page: null,
 
   init({ initialPage, resolveComponent, updatePage }) {
     this.resolveComponent = resolveComponent
