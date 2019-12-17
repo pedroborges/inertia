@@ -134,18 +134,22 @@ export default {
 
   setScroll(preserveScroll) {
     if (!preserveScroll) {
-      window.scrollTo(0, 0)
+      document.querySelectorAll('html,body,[scroll-region]')
+        .forEach(region => region.scrollTo(0, 0))
     }
   },
 
   setState(page, replace = false, preserveState = false) {
     if (replace || page.url === `${window.location.pathname}${window.location.search}`) {
       window.history.replaceState({
-        ...((preserveState && window.history.state) ? { cache: window.history.state.cache } : {}),
+        ...{ cache: preserveState && window.history.state ? window.history.state.cache : {} },
         ...page,
       }, '', page.url)
     } else {
-      window.history.pushState(page, '', page.url)
+      window.history.pushState({
+        cache: {},
+        ...page,
+      }, '', page.url)
     }
   },
 
