@@ -1,11 +1,12 @@
 {
-  "name": "@inertiajs/inertia",
+  "name": "inertia-light",
   "version": "0.1.9",
   "license": "MIT",
   "description": "A framework for creating server-driven single page apps.",
   "contributors": [
     "Jonathan Reinink <jonathan@reinink.ca>",
-    "Sebastian De Deyne <sebastiandedeyne@gmail.com>"
+    "Sebastian De Deyne <sebastiandedeyne@gmail.com>",
+    "Pedro Borges <oi@pedroborg.es>"
   ],
   "source": "src/index.js",
   "main": "dist/index.js",
