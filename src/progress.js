@@ -1,23 +1,16 @@
-import Tinybar from 'tinybar'
-
-const tinybar = new Tinybar()
 
 export default {
   delay: null,
   loading: false,
 
   start() {
-    clearTimeout(this.delay)
-
-    this.delay = setTimeout(() => {
-      this.loading = true
-      tinybar.go(10)
-    }, 250)
+    this.loading = true
+    document.dispatchEvent(new Event("inertia.start"))
   },
 
   increment() {
     if (this.loading) {
-      tinybar.go(50)
+      document.dispatchEvent(new Event("inertia.increment"))
     }
   },
 
@@ -25,7 +18,7 @@ export default {
     clearTimeout(this.delay)
 
     if (this.loading) {
-      tinybar.go(100)
+      document.dispatchEvent(new Event("inertia.stop"))
       this.loading = false
     }
   },
