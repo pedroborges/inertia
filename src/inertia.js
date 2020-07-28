@@ -36,7 +36,7 @@ export default {
   },
 
   hasBody(method) {
-    return ['get', 'head'].includes(method)
+    return ['get', 'head'].includes(method) === false
   },
 
   getCookieValue(name) {
