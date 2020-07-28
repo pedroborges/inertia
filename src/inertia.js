@@ -37,7 +37,7 @@ export default {
   },
 
   hasBody(method) {
-    return ['GET', 'HEAD'].indexOf(method.toUpperCase()) === -1
+    return ['get', 'head'].includes(method)
   },
 
   getCookieValue(name) {
@@ -62,9 +62,22 @@ export default {
     Progress.start()
     this.cancelActiveVisits()
     let visitId = this.createVisitId()
-
-    return window.fetch(url.toString(), {
-      method: method.toLowerCase(),
+    
+    url = url.toString();
+    method = method.toLowerCase();
+    
+    // pass data as query params in get requests
+    if (method === 'get' && Object.keys(data).length) {
+      url +=
+        '?' +
+        Object.keys(data)
+          .filter(key => data[key] !== undefined && data[key] !== null)
+          .map(key => key + '=' + data[key])
+          .join('&')
+    }
+              
+    return window.fetch(url, {
+      method: method,
       ...this.hasBody(method) ? { body: JSON.stringify(data) } : {},
       signal: this.abortController.signal,
       credentials: 'include',
