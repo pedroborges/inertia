@@ -18,9 +18,6 @@
     "build:umd": "microbundle --format umd --name Inertia --external none",
     "prepublishOnly": "npm run build"
   },
-  "dependencies": {
-    "tinybar": "^0.0.2"
-  },
   "devDependencies": {
     "eslint": "^6.1.0",
     "microbundle": "^0.11.0"

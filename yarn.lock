@@ -3850,11 +3850,6 @@ tiny-glob@^0.2.6:
     globalyzer "^0.1.0"
     globrex "^0.1.1"
 
-tinybar@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/tinybar/-/tinybar-0.0.2.tgz#f937f85b5010a1e5538e2fc8dcedaced1623d128"
-  integrity sha512-3f92C88N2E0PLntW1GbYifkTjoXMlQb43cwnRmsxWxBi9MyovC3aJHAJBxdhXPNBNzHnc0rH1dpY+IYHCXjjVA==
-
 tmp@^0.0.33:
   version "0.0.33"
   resolved "https://registry.yarnpkg.com/tmp/-/tmp-0.0.33.tgz#6d34335889768d21b2bcda0aa277ced3b1bfadf9"
