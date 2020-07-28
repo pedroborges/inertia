@@ -62,7 +62,8 @@ export default {
     Progress.start()
     this.cancelActiveVisits()
     let visitId = this.createVisitId()
-    let url = url.toString();
+    
+    url = url.toString();
     method = method.toLowerCase();
     
     // pass data as query params in get requests
