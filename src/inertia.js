@@ -1,5 +1,4 @@
 import Modal from './modal'
-import Progress from './progress'
 
 export default {
   resolveComponent: null,
@@ -59,7 +58,7 @@ export default {
   },
 
   visit(url, { method = 'get', data = {}, replace = false, preserveScroll = false, preserveState = false, only = [] } = {}) {
-    Progress.start()
+    document.dispatchEvent(new Event('inertia:visit'))
     this.cancelActiveVisits()
     let visitId = this.createVisitId()
     
@@ -95,13 +94,13 @@ export default {
       },
     }).then(response => {
       if (response.status === 409 && response.headers.has('x-inertia-location')) {
-        Progress.stop()
+        document.dispatchEvent(new Event('inertia:load'))
         return this.hardVisit(true, response.headers.get('x-inertia-location'))
       } else if (this.isInertiaResponse(response)) {
         return response.json()
       } else {
         response.text().then(data => {
-          Progress.stop()
+          document.dispatchEvent(new Event('inertia:load'))
           Modal.show(data)
         })
       }
@@ -134,7 +133,6 @@ export default {
 
   setPage(page, { visitId = this.createVisitId(), replace = false, preserveScroll = false, preserveState = false } = {}) {
     this.page = page
-    Progress.increment()
     return Promise.resolve(this.resolveComponent(page.component)).then(component => {
       if (visitId === this.visitId) {
         preserveState = typeof preserveState === 'function' ? preserveState(page.props) : preserveState
@@ -144,7 +142,7 @@ export default {
         this.setState(page, replace, preserveState)
         this.updatePage(component, page.props, { preserveState })
         this.setScroll(preserveScroll)
-        Progress.stop()
+        document.dispatchEvent(new Event('inertia:load'))
       }
     })
   },
