@@ -71,7 +71,7 @@ export default {
         '?' +
         Object.keys(data)
           .filter(key => data[key] !== undefined && data[key] !== null)
-          .map(key => key + '=' + data[key])
+          .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
           .join('&')
     }
               
