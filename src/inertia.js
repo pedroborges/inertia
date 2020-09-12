@@ -1,4 +1,4 @@
-import Modal from './modal'
+import modal from './modal'
 
 export default {
   resolveComponent: null,
@@ -101,7 +101,7 @@ export default {
       } else {
         response.text().then(data => {
           document.dispatchEvent(new Event('inertia:load'))
-          Modal.show(data)
+          modal.show(data)
         })
       }
     }).catch(error => {
