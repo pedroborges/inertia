@@ -75,15 +75,15 @@ export default {
     return this.visitId
   },
 
-  visit(url, { method = 'get', data = {}, replace = false, preserveScroll = false, preserveState = false, only = [] } = {}) {
+  visit(url, { method = 'get', data = {}, replace = false, preserveScroll = false, preserveState = false, only = [], headers = {} } = {}) {
     document.dispatchEvent(new Event('inertia:visit'))
     this.cancelActiveVisits()
     this.saveScrollPositions()
     let visitId = this.createVisitId()
-    
+
     url = url.toString();
     method = method.toLowerCase();
-    
+
     // pass data as query params in get requests
     if (method === 'get' && Object.keys(data).length) {
       url +=
@@ -93,13 +93,14 @@ export default {
           .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
           .join('&')
     }
-              
+
     return window.fetch(url, {
       method: method,
       ...this.hasBody(method) ? { body: JSON.stringify(data) } : {},
       signal: this.abortController.signal,
       credentials: 'include',
       headers: {
+        ...headers,
         'Content-Type': 'application/json;charset=UTF-8',
         Accept: 'text/html, application/xhtml+xml',
         'X-Requested-With': 'XMLHttpRequest',
@@ -161,9 +162,9 @@ export default {
 
           scrollRegions.forEach(region => {
             region.addEventListener('scroll', this.saveScrollPositions)
-    })
+          })
 
-    if (!preserveScroll) {
+          if (!preserveScroll) {
             document.documentElement.scrollTop = 0
             document.documentElement.scrollLeft = 0
             scrollRegions.forEach(region => {
@@ -175,7 +176,7 @@ export default {
           this.saveScrollPositions()
         })
         document.dispatchEvent(new Event('inertia:load'))
-    }
+      }
     })
   },
 
